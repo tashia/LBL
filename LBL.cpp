@@ -1,4 +1,5 @@
 #include <vector>
+#include <string>
 #include <fstream>
 #include "LBL.h"
 
@@ -6,6 +7,27 @@
 // the framework's assumed globals.
 EXT_DECLARE_GLOBALS();
 
+EXT_COMMAND(test, "test function for all functions",""){
+
+	// test the new output callback functions
+	std::string sampleCommand(".echo executing echo command");
+	m_LBLCaptureOutputA.Execute(sampleCommand.c_str());
+	std::string outStr(m_LBLCaptureOutputA.GetTextNonNull());
+	m_Control->Output(DEBUG_OUTPUT_NORMAL, "This is from capture: %s\n", outStr.c_str());
+	ExtCheckedPointer<ExtExtension> currentEng("current extension Engine");
+	currentEng.Set(this);
+	m_LBLCaptureOutputA.SwitchExtEng(currentEng);
+	std::string newCommand(".echo switched the engine");
+	m_LBLCaptureOutputA.Execute(newCommand.c_str());
+	std::string newStr(m_LBLCaptureOutputA.GetTextNonNull());
+	m_Control->Output(DEBUG_OUTPUT_NORMAL, "This is from capture: %s\n", newStr.c_str());
+	m_LBLCaptureOutputA.ResetExtEng();
+	m_LBLCaptureOutputA.Execute(sampleCommand.append(" with reset engine").c_str());
+	m_Control->Output(DEBUG_OUTPUT_NORMAL, "This is from capture: %s\n", m_LBLCaptureOutputA.GetTextNonNull());
+	std::string outputFromOneFunc(GetOutputFromCommand(".echo getoutputfromcommand"));
+	m_Control->Output(DEBUG_OUTPUT_NORMAL, "This is from capture: %s\n", outputFromOneFunc.c_str());
+
+}
 
 EXT_COMMAND(memsave, "save memory range to file", "{;ed;r; start address; start address}"
 	"{;ed;r; bytesRead; bytes read from the target's memory}"
@@ -55,6 +77,10 @@ bool LBL_EXT::IsLiveTarget(){
 		|| (m_DebuggeeQual == DEBUG_KERNEL_EXDI_DRIVER);
 }
 
+std::string LBL_EXT::GetOutputFromCommand(const std::string command){
+	m_LBLCaptureOutputA.Execute(command.c_str());
+	return m_LBLCaptureOutputA.GetTextNonNull();
+}
 
 /*    void DmlCmdLink(_In_ PCSTR Text,
                     _In_ PCSTR Cmd)
