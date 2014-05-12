@@ -50,12 +50,20 @@ EXT_COMMAND(memsave, "save memory range to file", "{;ed;r; start address; start 
 }
 
 bool LBL_EXT::IsLiveTarget(){
-	ULONG classType, qualifier;
-	m_Control->GetDebuggeeType(&classType, &qualifier);
-	if ((qualifier == DEBUG_KERNEL_CONNECTION) 
-		|| (qualifier == DEBUG_KERNEL_LOCAL) 
-		|| (qualifier == DEBUG_KERNEL_EXDI_DRIVER)){
-		return true;
-	}
-	return false;
+	return (m_DebuggeeQual == DEBUG_KERNEL_LOCAL)
+		|| (m_DebuggeeQual == DEBUG_KERNEL_LOCAL)
+		|| (m_DebuggeeQual == DEBUG_KERNEL_EXDI_DRIVER);
 }
+
+
+/*    void DmlCmdLink(_In_ PCSTR Text,
+                    _In_ PCSTR Cmd)
+    {
+        Dml("<link cmd=\"%s\">%s</link>", Cmd, Text);
+    }
+    void DmlCmdExec(_In_ PCSTR Text,
+                    _In_ PCSTR Cmd)
+    {
+        Dml("<exec cmd=\"%s\">%s</exec>", Cmd, Text);
+    }
+	*/
