@@ -107,6 +107,7 @@
     </Link>
     <ClCompile>
       <AdditionalIncludeDirectories>$(WindowsSdkDir)Debuggers\inc</AdditionalIncludeDirectories>
+      <Optimization>MaxSpeed</Optimization>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>

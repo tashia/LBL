@@ -42,6 +42,7 @@ EXT_COMMAND(memsave, "save memory range to file", "{;ed;r; start address; start 
 		PCSTR fileName = GetUnnamedArgStr(2);
 		std::vector<char> bufVec((ULONG)bytes2Read);
 		ULONG bytesRead=0, bytesLeft = (ULONG)bytes2Read, bufCursor=0, retryTime=0, readFlag;
+
 		if (IsLiveTarget()){
 			readFlag = DEBUG_PHYSICAL_UNCACHED;
 		}
@@ -72,7 +73,7 @@ EXT_COMMAND(memsave, "save memory range to file", "{;ed;r; start address; start 
 }
 
 bool LBL_EXT::IsLiveTarget(){
-	return (m_DebuggeeQual == DEBUG_KERNEL_LOCAL)
+	return (m_DebuggeeQual == DEBUG_KERNEL_CONNECTION)
 		|| (m_DebuggeeQual == DEBUG_KERNEL_LOCAL)
 		|| (m_DebuggeeQual == DEBUG_KERNEL_EXDI_DRIVER);
 }
