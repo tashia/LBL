@@ -3,6 +3,7 @@ LIBRARY
 EXPORTS
     memsave
 	test
+	gotocr
 
 	DebugExtensionInitialize
 	DebugExtensionUninitialize

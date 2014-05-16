@@ -17,12 +17,13 @@ class LBL_EXT : public ExtExtension
 public:
 	EXT_COMMAND_METHOD(test);
 	EXT_COMMAND_METHOD(memsave);
+	EXT_COMMAND_METHOD(gotocr);
 
 
 protected:
 	bool IsLiveTarget();
 	std::string GetOutputFromCommand(const std::string command);
-
+	void OpenLink(const std::string url);
 #pragma region implementation of IDebugCallback
 
 	//----------------------------------------------------------------------------

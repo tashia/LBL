@@ -1,6 +1,7 @@
 #include <vector>
 #include <string>
 #include <fstream>
+#include <Windows.h>
 #include "LBL.h"
 
 // EXT_DECLARE_GLOBALS must be used to instantiate
@@ -26,7 +27,20 @@ EXT_COMMAND(test, "test function for all functions",""){
 	m_Control->Output(DEBUG_OUTPUT_NORMAL, "This is from capture: %s\n", m_LBLCaptureOutputA.GetTextNonNull());
 	std::string outputFromOneFunc(GetOutputFromCommand(".echo getoutputfromcommand"));
 	m_Control->Output(DEBUG_OUTPUT_NORMAL, "This is from capture: %s\n", outputFromOneFunc.c_str());
+	OpenLink("www.bing.com");
 
+}
+
+EXT_COMMAND(gotocr, "link to the cr page", "{;s;r; cr number; the right cr number}"){
+	if (GetNumUnnamedArgs() == 1){
+		PCSTR crNumber = GetUnnamedArgStr(0);
+		std::string prismURL("http://prism/CR/");
+		prismURL.append(crNumber);
+		OpenLink(prismURL);
+	}
+	else{
+		m_Control->Output(DEBUG_OUTPUT_NORMAL, "please provide a right CR# %s\n", "e.g. 88899");
+	}
 }
 
 EXT_COMMAND(memsave, "save memory range to file", "{;ed;r; start address; start address}"
@@ -83,6 +97,10 @@ std::string LBL_EXT::GetOutputFromCommand(const std::string command){
 	return m_LBLCaptureOutputA.GetTextNonNull();
 }
 
+void LBL_EXT::OpenLink(const std::string url){
+	ShellExecute(NULL, "open", url.c_str(),
+		NULL, NULL, SW_SHOWNORMAL);
+}
 /*    void DmlCmdLink(_In_ PCSTR Text,
                     _In_ PCSTR Cmd)
     {
