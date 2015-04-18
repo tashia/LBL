@@ -23,7 +23,7 @@ public:
 protected:
 	bool IsLiveTarget();
 	std::string GetOutputFromCommand(const std::string command);
-	void OpenLink(const std::string url);
+	void OpenLink(LPCWSTR url);
 #pragma region implementation of IDebugCallback
 
 	//----------------------------------------------------------------------------

@@ -27,16 +27,21 @@ EXT_COMMAND(test, "test function for all functions",""){
 	m_Control->Output(DEBUG_OUTPUT_NORMAL, "This is from capture: %s\n", m_LBLCaptureOutputA.GetTextNonNull());
 	std::string outputFromOneFunc(GetOutputFromCommand(".echo getoutputfromcommand"));
 	m_Control->Output(DEBUG_OUTPUT_NORMAL, "This is from capture: %s\n", outputFromOneFunc.c_str());
-	OpenLink("www.bing.com");
+	OpenLink(TEXT("www.bing.com"));
 
 }
 
 EXT_COMMAND(gotocr, "link to the cr page", "{;s;r; cr number; the right cr number}"){
 	if (GetNumUnnamedArgs() == 1){
-		PCSTR crNumber = GetUnnamedArgStr(0);
-		std::string prismURL("http://prism/CR/");
-		prismURL.append(crNumber);
-		OpenLink(prismURL);
+		LPCSTR crNumber = GetUnnamedArgStr(0);
+		// convert https://msdn.microsoft.com/en-us/library/ms235631%28v=vs.80%29.aspx
+		size_t n_size = strlen(crNumber) + 1;
+		wchar_t wcrNumber[20];
+		size_t converted_chars = 0;
+		mbstowcs_s(&converted_chars, wcrNumber, n_size, _strdup(crNumber), _TRUNCATE);
+		std::wstring prismURL(TEXT("http://prism/CR/"));
+		prismURL.append(wcrNumber);
+		OpenLink(prismURL.c_str());
 	}
 	else{
 		m_Control->Output(DEBUG_OUTPUT_NORMAL, "please provide a right CR# %s\n", "e.g. 88899");
@@ -97,8 +102,8 @@ std::string LBL_EXT::GetOutputFromCommand(const std::string command){
 	return m_LBLCaptureOutputA.GetTextNonNull();
 }
 
-void LBL_EXT::OpenLink(const std::string url){
-	ShellExecute(NULL, "open", url.c_str(),
+void LBL_EXT::OpenLink(LPCWSTR url){
+	ShellExecute(NULL, TEXT("open"), url,
 		NULL, NULL, SW_SHOWNORMAL);
 }
 /*    void DmlCmdLink(_In_ PCSTR Text,
