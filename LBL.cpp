@@ -27,8 +27,39 @@ EXT_COMMAND(test, "test function for all functions",""){
 	m_Control->Output(DEBUG_OUTPUT_NORMAL, "This is from capture: %s\n", m_LBLCaptureOutputA.GetTextNonNull());
 	std::string outputFromOneFunc(GetOutputFromCommand(".echo getoutputfromcommand"));
 	m_Control->Output(DEBUG_OUTPUT_NORMAL, "This is from capture: %s\n", outputFromOneFunc.c_str());
-	OpenLink(TEXT("www.bing.com"));
+//	OpenLink(TEXT("www.bing.com"));
 
+	// check debuggee status
+	m_Control->OutputCurrentState(DEBUG_OUTCTL_ALL_CLIENTS, DEBUG_CURRENT_SYMBOL);// | DEBUG_CURRENT_SOURCE_LINE);
+
+	// get kernel data structure
+	PCSTR mn = "nt";
+	ULONG start_index = 0, curr_index = 0;
+	ULONG64 m_base = 0;
+	m_Symbols->GetModuleByModuleName(mn, start_index, &curr_index, &m_base);
+	m_Control->Output(DEBUG_OUTPUT_NORMAL, "index %lx and base %lx \n", curr_index, m_base);
+	ULONG tid = 0, t_size = 0;
+	m_Symbols->GetTypeId(m_base, "CONTEXT", &tid);
+	m_Symbols->GetTypeSize(m_base, tid, &t_size);
+	m_Control->Output(DEBUG_OUTPUT_NORMAL, "type id is %lx and size is %lx\n", tid, t_size);
+
+	// get stack info
+	// in windbg ?? sizeof(CONTEXT)
+	const ULONG ARM_CONTEXT_SIZE = 0x1a0;
+	const ULONG buf_size = 1024;
+	const ULONG MAX_FRAME_COUNT = 64;
+	char ctxt_buf[ARM_CONTEXT_SIZE];
+	m_Advanced->GetThreadContext(ctxt_buf, ARM_CONTEXT_SIZE);
+	const ULONG f_size = MAX_FRAME_COUNT * ARM_CONTEXT_SIZE;
+	DEBUG_STACK_FRAME frames[MAX_FRAME_COUNT];
+	char fctxt_buf[f_size];
+	ULONG filled_frames = 0;
+	HRESULT hr = m_Control4->GetContextStackTrace(ctxt_buf, ARM_CONTEXT_SIZE,
+		frames, MAX_FRAME_COUNT, fctxt_buf, f_size, ARM_CONTEXT_SIZE, &filled_frames);
+	m_Control->Output(DEBUG_OUTPUT_NORMAL, "return is %d \n", hr);
+	hr = m_Control4->OutputContextStackTrace(DEBUG_OUTCTL_ALL_CLIENTS,
+		frames, filled_frames, fctxt_buf, filled_frames * ARM_CONTEXT_SIZE, ARM_CONTEXT_SIZE, DEBUG_STACK_FRAME_ADDRESSES);
+	m_Control->Output(DEBUG_OUTPUT_NORMAL, "return is %d\n", hr);
 }
 
 EXT_COMMAND(gotocr, "link to the cr page", "{;s;r; cr number; the right cr number}"){

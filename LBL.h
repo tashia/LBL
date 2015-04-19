@@ -288,6 +288,11 @@ protected:
 	};
 
 #pragma endregion
+#ifdef UNICODE
+#define LCHAR WCHAR
+#else
+#define LCHAR char
+#endif 
 	typedef LBLExtCaptureOutput<char, IDebugOutputCallbacks> LBLExtCaptureOutputA;
 	typedef LBLExtCaptureOutput<WCHAR, IDebugOutputCallbacksWide> LBLExtCaptureOutputW;
 private:
